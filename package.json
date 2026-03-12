@@ -1,0 +1,38 @@
+{
+  "name": "opengravity",
+  "version": "1.0.0",
+  "description": "OpenGravity - Rick Sanchez Telegram Agent",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "dotenv": "^16.6.1",
+    "elevenlabs-node": "^2.0.3",
+    "express": "^5.2.1",
+    "firebase-admin": "^13.7.0",
+    "grammy": "^1.41.1",
+    "groq-sdk": "^0.8.0",
+    "openai": "^4.104.0",
+    "pdf-parse": "^2.4.5",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "@grammyjs/files": "^1.2.0",
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/express": "^5.0.6",
+    "@types/long": "^4.0.2",
+    "@types/node": "^22.19.15",
+    "@types/node-fetch": "^2.6.13",
+    "@types/pdf-parse": "^1.1.5",
+    "elevenlabs": "^1.59.0",
+    "form-data": "^4.0.5",
+    "node-fetch": "^2.7.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

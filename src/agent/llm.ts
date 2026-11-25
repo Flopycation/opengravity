@@ -3,10 +3,12 @@ import OpenAI from "openai";
 import { ENV } from "../env.js";
 import { getAllTools } from "./tools/index.js";
 
-const groq = ENV.GROQ_API_KEY ? new Groq({ apiKey: ENV.GROQ_API_KEY }) : null;
+const groq = ENV.GROQ_API_KEY ? new Groq({ apiKey: ENV.GROQ_API_KEY, timeout: 30000, maxRetries: 0 }) : null;
 const openrouter = ENV.OPENROUTER_API_KEY ? new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
   apiKey: ENV.OPENROUTER_API_KEY,
+  timeout: 30000,
+  maxRetries: 0,
   defaultHeaders: {
     "HTTP-Referer": "https://github.com/flopy/opengravity", 
     "X-Title": "OpenGravity",
@@ -28,24 +30,24 @@ export async function invokeLLM(messages: any[], useTools: boolean = true) {
       return await openrouter.chat.completions.create({
         model: ENV.OPENROUTER_MODEL, // Para visión se espera que OPENROUTER_MODEL apunte a google/gemini-2.5-flash-free u otro modelo multimodal!
         messages,
-        tools: toolsInfo as any,
-        tool_choice: "auto",
+        ...(toolsInfo?.length ? { tools: toolsInfo as any, tool_choice: "auto" as const } : {}),
+        max_tokens: 1024,
         temperature: 0.7,
       });
     } else if (groq && !isMultimodal) {
       return await groq.chat.completions.create({
         model: ENV.GROQ_MODEL,
         messages,
-        tools: toolsInfo as any,
-        tool_choice: "auto",
+        ...(toolsInfo?.length ? { tools: toolsInfo as any, tool_choice: "auto" as const } : {}),
+        max_tokens: 1024,
         temperature: 0.7,
       });
     } else if (openrouter) {
       return await openrouter.chat.completions.create({
         model: ENV.OPENROUTER_MODEL,
         messages,
-        tools: toolsInfo as any,
-        tool_choice: "auto",
+        ...(toolsInfo?.length ? { tools: toolsInfo as any, tool_choice: "auto" as const } : {}),
+        max_tokens: 1024,
         temperature: 0.7,
       });
     } else {

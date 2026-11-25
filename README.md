@@ -12,3 +12,7 @@ Prototipo de agente personal de Telegram en TypeScript, recuperado del ZIP origi
 ## Estado
 
 Código recuperado y corregido estáticamente; no se han instalado dependencias ni ejecutado pruebas reales de Telegram, IA, audio, PDF, Firebase o Docker. Los conectores MCP históricos se conservan como referencia, pero no se arrancan por defecto. No habilitarlos hasta revisar permisos, dependencias y aislamiento. No publicar datos personales, bases de datos ni secretos.
+
+## Revisión 25/11/2026
+
+Solo chats privados y usuarios autorizados. Gestión global de errores y cierre del bot, estado HTTP de disponibilidad, orden de memoria por ID, y límites de salida y tiempo por llamada al proveedor. No hay límite monetario global: configurar cuotas con el proveedor. Ejecutar `npm ci --include=dev` y `npm run typecheck` antes de iniciar. No usar Vercel serverless con long polling. No se ha validado la compilación completa ni una conexión real. La rotación de claves históricas sigue siendo obligatoria.

@@ -2,30 +2,20 @@ import { bot } from "./bot.js";
 import { initMemory } from "./agent/memory.js";
 import express from "express";
 
-// Configurar Express para la nube (Render, Koyeb, Railway, etc.)
 const app = express();
-const PORT = process.env.PORT || 8080;
-
-app.get("/", (req, res) => {
-  res.send("*eructa* M-mira, el bot está vivo y coleando. Tu asqueroso ping ha funcionado.");
-});
-
-app.listen(PORT, () => {
-  console.log(`Servidor HTTP cutre escuchando en el puerto ${PORT} para engañar a la nube.`);
-});
-
-console.log("Iniciando conectores cuánticos y base de datos...");
-import { startKeepAlive } from "./keepalive.js";
-
-// MCP externos desactivados hasta una revisión independiente de permisos y dependencias.
+const port = Number(process.env.PORT || 8080);
+if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error("PORT inválido.");
+let ready = false;
+app.get("/", (_req, res) => res.status(ready ? 200 : 503).send(ready ? "OpenGravity listo." : "OpenGravity iniciando."));
 await initMemory();
-
-// Arrancamos el latido para que la puta nube no se duerma
-startKeepAlive();
-
-console.log("Iniciando OpenGravity... *eructa*");
-bot.start({
-  onStart: (botInfo) => {
-    console.log(`Bot @${botInfo.username} en línea y preparado para insultar a usuario.`);
-  }
-});
+const server = app.listen(port);
+bot.catch(() => console.error("Error procesando actualización de Telegram."));
+for (const signal of ["SIGINT", "SIGTERM"] as const) {
+  process.once(signal, () => { ready = false; server.close(); if (bot.isRunning()) void bot.stop(); });
+}
+try {
+  await bot.start({ onStart: () => { ready = true; console.log("Bot listo."); } });
+} finally {
+  ready = false;
+  server.close();
+}

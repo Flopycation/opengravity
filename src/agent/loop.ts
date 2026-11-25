@@ -22,7 +22,7 @@ export async function runAgentLoop(userId: number, userMessage: string, rawConte
     try {
       const parsedContent = JSON.parse(rawContentStr);
       // Ensure the LLM understands it's the latest message
-      messages.push({ role: "user", content: parsedContent });
+      messages[messages.length - 1] = { role: "user", content: parsedContent };
     } catch(e) {
       console.error("No se pudo parsear el rawContentStr", e);
     }
@@ -35,7 +35,8 @@ export async function runAgentLoop(userId: number, userMessage: string, rawConte
     console.log(`[Agente] Iteración ${iterations} para user ${userId}`);
 
     const response = await invokeLLM(messages);
-    const message = response.choices[0].message;
+    const message = response.choices[0]?.message;
+    if (!message) throw new Error("Respuesta vacía del proveedor.");
     
     // Si llama herramientas
     if (message.tool_calls && message.tool_calls.length > 0) {
@@ -43,11 +44,12 @@ export async function runAgentLoop(userId: number, userMessage: string, rawConte
       
       for (const toolCall of message.tool_calls) {
         const fnName = toolCall.function.name;
-        const fnArgs = toolCall.function.arguments ? JSON.parse(toolCall.function.arguments) : {};
+        
         
         console.log(`[Agente] LLM invocando herramienta: ${fnName}`);
         
         try {
+          const fnArgs = toolCall.function.arguments ? JSON.parse(toolCall.function.arguments) : {};
           const toolResult = await executeTool(fnName, fnArgs);
           
           // Magia cuántica: Si la herramienta devuelve una URL o archivo, forzamos un envío directo
@@ -76,7 +78,7 @@ export async function runAgentLoop(userId: number, userMessage: string, rawConte
             tool_call_id: toolCall.id,
             role: "tool",
             name: fnName,
-            content: `Error ejecutando ${fnName}: ${e.message}`
+            content: `Error ejecutando ${fnName}.`
           });
         }
       }

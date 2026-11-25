@@ -32,10 +32,10 @@ export async function initMemory() {
     sqlInsertStmt = await sqlDb.prepare(`INSERT INTO messages (user_id, role, content) VALUES (?, ?, ?)`);
     sqlSelectStmt = await sqlDb.prepare(`
       SELECT role, content FROM (
-        SELECT role, content, timestamp FROM messages 
+        SELECT id, role, content FROM messages 
         WHERE user_id = ? 
-        ORDER BY timestamp DESC LIMIT ?
-      ) ORDER BY timestamp ASC
+        ORDER BY id DESC LIMIT ?
+      ) ORDER BY id ASC
     `);
   }
 
@@ -107,11 +107,12 @@ export const Memory = {
         .get();
         
       if (!snapshot.empty) {
-        const batch = fbDb.batch();
-        snapshot.docs.forEach((doc) => {
-          batch.delete(doc.ref);
-        });
-        await Promise.all([sqlPromise, batch.commit()]);
+        await sqlPromise;
+        for (let i = 0; i < snapshot.docs.length; i += 400) {
+          const batch = fbDb.batch();
+          snapshot.docs.slice(i, i + 400).forEach(doc => batch.delete(doc.ref));
+          await batch.commit();
+        }
         return;
       }
     }

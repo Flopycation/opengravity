@@ -16,7 +16,7 @@ bot.api.config.use(hydrateFiles(bot.token));
 
 bot.use(async (ctx, next) => {
   const userId = ctx.from?.id;
-  if (!userId) return;
+  if (!userId || ctx.chat?.type !== "private") return;
   
   if (!ENV.TELEGRAM_ALLOWED_USER_IDS.includes(userId)) {
     console.log("[Auth] Acceso no autorizado bloqueado.");
@@ -82,6 +82,7 @@ bot.on(["message:voice", "message:audio"], async (ctx) => {
     if ((file.file_size || 0) > 15 * 1024 * 1024) { await ctx.reply("Audio demasiado grande."); return; }
     const tempFilePath = path.join(dir, "audio.ogg");
     await file.download(tempFilePath);
+    if (fs.statSync(tempFilePath).size > 15 * 1024 * 1024) { await ctx.reply("Audio demasiado grande."); return; }
     
     // Transcribir en Groq
     const transcription = await transcribeAudio(tempFilePath);
@@ -154,6 +155,7 @@ bot.on("message:document", async (ctx) => {
     const file = await ctx.getFile();
     const tempFilePath = path.join(dir, "document");
     await file.download(tempFilePath);
+    if (fs.statSync(tempFilePath).size > 15 * 1024 * 1024) { await ctx.reply("Documento demasiado grande."); return; }
     
     let extractedText = "";
     

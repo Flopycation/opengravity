@@ -9,3 +9,8 @@ dist/
 *.log
 .vercel/
 service-account*.json
+serviceAccountKey.json
+*.pem
+*.key
+*.db-wal
+*.db-shm

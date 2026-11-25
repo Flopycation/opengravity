@@ -1,0 +1,12 @@
+.git
+node_modules
+.env
+.env.*
+*.db
+*.db-*
+*.sqlite*
+*.log
+service-account*.json
+serviceAccountKey.json
+*.pem
+*.key

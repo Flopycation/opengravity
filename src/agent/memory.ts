@@ -120,3 +120,12 @@ export const Memory = {
     await sqlPromise;
   }
 };
+
+export async function closeMemory() {
+  if (sqlInsertStmt) await sqlInsertStmt.finalize();
+  if (sqlSelectStmt) await sqlSelectStmt.finalize();
+  if (sqlDb) await sqlDb.close();
+  sqlInsertStmt = null;
+  sqlSelectStmt = null;
+  sqlDb = null;
+}

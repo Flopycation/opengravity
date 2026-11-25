@@ -21,5 +21,7 @@ jobs:
           package-manager-cache: false
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm run typecheck
+      - run: npm rebuild sqlite3
+      - run: npx --no-install tsx tests/memory-smoke.ts
 
 # Repetición QA: entorno MCP restringido.

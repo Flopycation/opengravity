@@ -39,7 +39,7 @@ class McpManager {
         const transport = new StdioClientTransport({
           command: command,
           args: config.args,
-          env: process.env
+          env: {} // No propagar credenciales a procesos MCP externos.
         });
 
         const client = new Client(
